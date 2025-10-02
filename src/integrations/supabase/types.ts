@@ -14,7 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      incident_reports: {
+        Row: {
+          category: Database["public"]["Enums"]["incident_category"] | null
+          contact_info: string | null
+          created_at: string | null
+          description: string
+          id: string
+          image_url: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          reported_by: string | null
+          status: Database["public"]["Enums"]["report_status"] | null
+          title: string
+          updated_at: string | null
+          video_url: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["incident_category"] | null
+          contact_info?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          reported_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+          title: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["incident_category"] | null
+          contact_info?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          reported_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+          title?: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      missing_persons: {
+        Row: {
+          age: number
+          circumstances: string | null
+          contact_info: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          last_seen_datetime: string
+          last_seen_location: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          relationship: string
+          reported_by: string | null
+          status: Database["public"]["Enums"]["report_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          age: number
+          circumstances?: string | null
+          contact_info: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          last_seen_datetime: string
+          last_seen_location: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          relationship: string
+          reported_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: number
+          circumstances?: string | null
+          contact_info?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          last_seen_datetime?: string
+          last_seen_location?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          relationship?: string
+          reported_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      safe_checkins: {
+        Row: {
+          contact_info: string | null
+          created_at: string | null
+          id: string
+          latitude: number | null
+          location: string
+          longitude: number | null
+          message: string | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          message?: string | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string | null
+          id?: string
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          message?: string | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sightings: {
+        Row: {
+          contact_info: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          missing_person_id: string
+          reported_by: string | null
+          sighting_datetime: string
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          missing_person_id: string
+          reported_by?: string | null
+          sighting_datetime: string
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          missing_person_id?: string
+          reported_by?: string | null
+          sighting_datetime?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sightings_missing_person_id_fkey"
+            columns: ["missing_person_id"]
+            isOneToOne: false
+            referencedRelation: "missing_persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +216,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      incident_category: "earthquake" | "flood" | "fire" | "typhoon" | "other"
+      report_status: "urgent" | "pending" | "verified" | "found"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +344,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      incident_category: ["earthquake", "flood", "fire", "typhoon", "other"],
+      report_status: ["urgent", "pending", "verified", "found"],
+    },
   },
 } as const
