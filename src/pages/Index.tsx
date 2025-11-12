@@ -5,58 +5,80 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  // Mock data - will be replaced with real data from backend
-  const incidents = [
-    {
-      id: 1,
-      title: "Earthquake Alert - Metro Manila",
-      description: "Magnitude 6.5 earthquake reported. Multiple buildings damaged in the central business district. Emergency services are responding.",
-      location: "Makati City, Metro Manila",
-      date: "2025-10-02 14:30",
-      status: "urgent" as const,
-    },
-    {
-      id: 2,
-      title: "Flooding in Northern Districts",
-      description: "Heavy rainfall has caused severe flooding. Several roads are impassable. Evacuation centers are now open.",
-      location: "Quezon City, Metro Manila",
-      date: "2025-10-02 12:15",
-      status: "verified" as const,
-    },
-    {
-      id: 3,
-      title: "Power Outage - Residential Area",
-      description: "Widespread power outage affecting approximately 5,000 households. Utility crews are working to restore service.",
-      location: "Pasig City, Metro Manila",
-      date: "2025-10-02 10:45",
-      status: "pending" as const,
-    },
-  ];
+  const [incidents, setIncidents] = useState<any[]>([]);
+  const [missingPersons, setMissingPersons] = useState<any[]>([]);
 
-  const missingPersons = [
-    {
-      id: 1,
-      name: "Maria Santos",
-      age: 28,
-      lastSeen: "SM Mall of Asia",
-      location: "Pasay City",
-      date: "2025-10-01 18:00",
-      status: "urgent" as const,
-      description: "Wearing blue dress, approximately 5'4\" tall",
-    },
-    {
-      id: 2,
-      name: "Juan Dela Cruz",
-      age: 45,
-      lastSeen: "Quezon Avenue",
-      location: "Quezon City",
-      date: "2025-10-01 09:30",
-      status: "pending" as const,
-      description: "Last seen wearing white shirt and jeans",
-    },
-  ];
+  useEffect(() => {
+    fetchData();
+
+    // Subscribe to realtime changes
+    const incidentsChannel = supabase
+      .channel("incidents-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "incident_reports" }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    const missingChannel = supabase
+      .channel("missing-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "missing_persons" }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(incidentsChannel);
+      supabase.removeChannel(missingChannel);
+    };
+  }, []);
+
+  const fetchData = async () => {
+    const { data: incidentsData } = await supabase
+      .from("incident_reports")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+
+    if (incidentsData) {
+      setIncidents(
+        incidentsData.map((incident) => ({
+          id: incident.id,
+          title: incident.title,
+          description: incident.description,
+          location: incident.location,
+          date: new Date(incident.created_at).toLocaleString(),
+          status: incident.status,
+          imageUrl: incident.image_url,
+        }))
+      );
+    }
+
+    const { data: missingData } = await supabase
+      .from("missing_persons")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+
+    if (missingData) {
+      setMissingPersons(
+        missingData.map((person) => ({
+          id: person.id,
+          name: person.name,
+          age: person.age,
+          lastSeen: person.last_seen_location,
+          location: person.last_seen_location,
+          date: new Date(person.last_seen_datetime).toLocaleString(),
+          status: person.status,
+          description: person.description,
+          imageUrl: person.image_url,
+        }))
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
