@@ -144,20 +144,19 @@ export const CrisisMap = () => {
     <Card className="overflow-hidden shadow-elevated">
       <div className="h-[600px] w-full">
         <MapContainer
-          {...{ center: defaultCenter, zoom: 12 } as any}
+          {...({ center: defaultCenter, zoom: 12 } as any)}
           style={{ height: "100%", width: "100%" }}
           scrollWheelZoom={true}
         >
           <TileLayer
-            {...{ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" } as any}
+            {...({ url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" } as any)}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* Incident markers */}
           {incidents.map((incident) => (
             <Marker
               key={incident.id}
-              {...{ position: [incident.latitude, incident.longitude], icon: incidentIcon } as any}
+              {...({ position: [incident.latitude, incident.longitude], icon: incidentIcon } as any)}
             >
               <Popup>
                 <div className="space-y-2">
@@ -172,11 +171,10 @@ export const CrisisMap = () => {
             </Marker>
           ))}
 
-          {/* Missing person markers */}
           {missingPersons.map((person) => (
             <Marker
               key={person.id}
-              {...{ position: [person.latitude, person.longitude], icon: missingPersonIcon } as any}
+              {...({ position: [person.latitude, person.longitude], icon: missingPersonIcon } as any)}
             >
               <Popup>
                 <div className="space-y-2">
@@ -192,11 +190,10 @@ export const CrisisMap = () => {
             </Marker>
           ))}
 
-          {/* Safe check-in markers */}
           {safeCheckins.map((checkin) => (
             <Marker
               key={checkin.id}
-              {...{ position: [checkin.latitude, checkin.longitude], icon: safeCheckinIcon } as any}
+              {...({ position: [checkin.latitude, checkin.longitude], icon: safeCheckinIcon } as any)}
             >
               <Popup>
                 <div className="space-y-2">
