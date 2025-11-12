@@ -1,6 +1,8 @@
 import { Navigation } from "@/components/Navigation";
 import { IncidentCard } from "@/components/IncidentCard";
+import { IncidentCardSkeleton } from "@/components/IncidentCardSkeleton";
 import { MissingPersonCard } from "@/components/MissingPersonCard";
+import { MissingPersonCardSkeleton } from "@/components/MissingPersonCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, Users } from "lucide-react";
@@ -11,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 const Index = () => {
   const [incidents, setIncidents] = useState<any[]>([]);
   const [missingPersons, setMissingPersons] = useState<any[]>([]);
+  const [isLoadingIncidents, setIsLoadingIncidents] = useState(true);
+  const [isLoadingMissing, setIsLoadingMissing] = useState(true);
 
   useEffect(() => {
     fetchData();
@@ -37,6 +41,9 @@ const Index = () => {
   }, []);
 
   const fetchData = async () => {
+    setIsLoadingIncidents(true);
+    setIsLoadingMissing(true);
+
     const { data: incidentsData } = await supabase
       .from("incident_reports")
       .select("*")
@@ -56,6 +63,7 @@ const Index = () => {
         }))
       );
     }
+    setIsLoadingIncidents(false);
 
     const { data: missingData } = await supabase
       .from("missing_persons")
@@ -78,6 +86,7 @@ const Index = () => {
         }))
       );
     }
+    setIsLoadingMissing(false);
   };
 
   return (
@@ -127,17 +136,33 @@ const Index = () => {
 
           <TabsContent value="incidents" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {incidents.map((incident) => (
-                <IncidentCard key={incident.id} {...incident} />
-              ))}
+              {isLoadingIncidents ? (
+                <>
+                  <IncidentCardSkeleton />
+                  <IncidentCardSkeleton />
+                  <IncidentCardSkeleton />
+                </>
+              ) : (
+                incidents.map((incident) => (
+                  <IncidentCard key={incident.id} {...incident} />
+                ))
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="missing" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {missingPersons.map((person) => (
-                <MissingPersonCard key={person.id} {...person} />
-              ))}
+              {isLoadingMissing ? (
+                <>
+                  <MissingPersonCardSkeleton />
+                  <MissingPersonCardSkeleton />
+                  <MissingPersonCardSkeleton />
+                </>
+              ) : (
+                missingPersons.map((person) => (
+                  <MissingPersonCard key={person.id} {...person} />
+                ))
+              )}
             </div>
           </TabsContent>
         </Tabs>

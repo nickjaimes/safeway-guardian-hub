@@ -136,9 +136,6 @@ export default {
         "scale-in": "scale-in 0.2s ease-out",
         "shimmer": "shimmer 2s ease-in-out infinite",
       },
-      transitionProperty: {
-        'colors-transform': 'color, background-color, border-color, text-decoration-color, fill, stroke, transform, box-shadow',
-      },
     },
   },
   plugins: [require("tailwindcss-animate")],
